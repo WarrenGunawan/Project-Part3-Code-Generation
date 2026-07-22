@@ -1,28 +1,67 @@
-    /* cs152-miniL phase2 */
+    /* cs152-miniL phase3 */
 %{
   #include <stdio.h>
   #include <stdlib.h>
+  #include <map>
+  #include <string.h>
+  #include <set>
+  #include <string>
+
+
   int yylex(void);
+  int yyparse();
   void yyerror(const char *msg);
 
-  extern int currLine;
+  extern char* yytext;
   extern int currPos;
+  extern int currLine;
   extern FILE *yyin;
+
+  std::map<std::string, std::string> varTemp;
+  std::map<std::string, int> arrSize;
+  bool mainFunc = false;
+  std::set<std::string> funcs;
+  std::set<std::string> reserved {"function", "beginparams", "endparams",
+    "beginlocals", "endlocals", "beginbody", "endbody",
+    "integer", "array", "enum", "of",
+    "if", "then", "endif", "else",
+    "for", "while", "do", "beginloop", "endloop",
+    "continue", "read", "write",
+    "and", "or", "not",
+    "true", "false",
+    "return"};
+
+  std::string new_temp();
+  std::string new_label();
 %}
 
 %error-verbose
 
 %union{
-  int numVal;
-  char* charVal;
+  int num;
+  char* ident;
+
+  struct S {
+    char* code;
+  } statement;
+
+  struct E {
+    char* place;
+    char* code;
+    bool arr;
+  } expression;
 }
 
 %start prog_start
 
 
 %token FUNCTION BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY INTEGER ARRAY ENUM OF IF THEN ENDIF ELSE FOR WHILE DO BEGINLOOP ENDLOOP CONTINUE READ WRITE AND OR NOT TRUE FALSE RETURN SUB ADD MULT DIV MOD EQ NEQ LTE GTE LT GT ASSIGN SEMICOLON COLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET
-%token <charVal> IDENT
-%token <numVal> NUMBER
+%token <ident> IDENT
+%token <num> NUMBER
+%type <ident> idents vars comp
+%type <expression> expression multiplicative_exp term term_one term_two var
+%type <expression> bool_exp relation_and_exp relation_exp comp expressions
+%type <statement> statement statements declarations declaration function
 
 %right ASSIGN
 %left OR
@@ -163,4 +202,14 @@ int main(int argc, char **argv) {
 
 void yyerror(const char *msg) {
   fprintf(stderr, "Syntax error at line %d, column %d: %s\n", currLine, currPos, msg);
+}
+
+std::string new_temp() {
+    static int count = 0;
+    return "_t" + std::to_string(count++);
+}
+
+std::string new_label() {
+    static int count = 0;
+    return "label_" + std::to_string(count++);
 }
