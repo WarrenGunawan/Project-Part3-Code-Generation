@@ -1,0 +1,35 @@
+function fibonacci;
+beginparams
+    k : integer;
+endparams
+beginlocals
+    a : integer;
+    b : integer;
+    temp : integer;
+    i : integer;
+endlocals
+beginbody
+    a := 0;
+    b := 1;
+    i := 0;
+    while (i < k) beginloop
+        temp := a + b;
+        a := b;
+        b := temp;
+        i := i + 1;
+    endloop;
+    return a;
+endbody
+
+function main;
+beginparams
+endparams
+beginlocals
+    n : integer;
+    fib_n : integer;
+endlocals
+beginbody
+    read n;
+    fib_n := fibonacci(n);
+    write fib_n;
+endbody

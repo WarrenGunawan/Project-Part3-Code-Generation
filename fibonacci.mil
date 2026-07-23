@@ -1,0 +1,38 @@
+func fibonacci
+. k
+= k, $0
+. a
+. b
+. temp
+. i
+. _t0
+. _t1
+. _t2
+. _t3
+= a, 0
+= b, 1
+= i, 0
+: label_0
+< _t0, i, k
+! _t3, _t0
+?:= label_1, _t3
++ _t1, a, b
+= temp, _t1
+= a, b
+= b, temp
++ _t2, i, 1
+= i, _t2
+:= label_0
+: label_1
+ret a
+endfunc
+func main
+. n
+. fib_n
+. _t4
+.< n
+param n
+call fibonacci, _t4
+= fib_n, _t4
+.> fib_n
+endfunc

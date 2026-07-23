@@ -6,12 +6,16 @@
   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
-  #include "y.tab.h"
+  #include "miniL-parser.hpp"
 
   int currLine = 1;
   int currPos = 1;
 
   static int token(int tokenType) {
+    yylloc.first_line = currLine;
+    yylloc.last_line = currLine;
+    yylloc.first_column = currPos;
+    yylloc.last_column = currPos + yyleng - 1;
     currPos += yyleng;
     return tokenType;
   }
@@ -97,12 +101,12 @@ IDENT {LETTER}({LETTER}|{DIGIT}|"_")*({LETTER}|{DIGIT})|{LETTER}
 }
 
 {DIGIT}+ {
-  yylval.numVal = atoi(yytext);
+  yylval.num = atoi(yytext);
   return token(NUMBER);
 }
 
 {IDENT} {
-  yylval.charVal = strdup(yytext);
+  yylval.ident = strdup(yytext);
   return token(IDENT);
 }
 
